@@ -3,6 +3,9 @@
 
 set -u # gives warning when using undeclared variables
 
+# fix error 'fatal: detected dubious ownership in repository at '/github/workspace'' in Github Action
+sh -c "git config --global --add safe.directory $PWD"
+
 VERSION_STRING="1.0.0"
 
 echo "Github event name: $GITHUB_EVENT_NAME"
