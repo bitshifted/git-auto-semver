@@ -16,8 +16,6 @@ jobs:
       - name: Generate version
         id: generate-version
         uses: ./
-        with:
-          initial_version: '0.1.0'
       - name: Print version information
         if: steps.generate-version.outputs.version-string != ''
         run: echo ${{ steps.generate-version.outputs.version-string }}
