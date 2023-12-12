@@ -6,7 +6,7 @@ set -u # gives warning when using undeclared variables
 # fix error 'fatal: detected dubious ownership in repository at '/github/workspace'' in Github Action
 sh -c "git config --global --add safe.directory $PWD"
 
-echo "Initial version: $INPUT_INITIAL_VERSION"
+echo "Initial version: ${INPUT_INITIAL-VERSION}"
 VERSION_STRING="1.0.0"
 
 echo "Github event name: $GITHUB_EVENT_NAME"
@@ -17,7 +17,7 @@ cat $GITHUB_EVENT_PATH
 
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
     VERSION_STRING=$(version.sh --pull-request)
-elif [ "$GITHUB_EVENT_NAME" = "push"]
+elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
     VERSION_STRING=$(version.sh)
 fi
 
