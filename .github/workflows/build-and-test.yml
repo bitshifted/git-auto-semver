@@ -19,7 +19,11 @@ jobs:
         with:
           initial_version: '0.1.0'
       - name: Print version information
-        if: steps.generate-version.outputs.version-string != ''
-        run: echo ${{ steps.generate-version.outputs.version-string }}
+        run: |
+          echo "Github SHA: $GITHUB_SHA"
+          commit_sha=$(git rev-parse --short "$GITHUB_SHA")
+          echo "commit sha: $commit_sha"
+          pr_version=${{ steps.generate-version.outputs.version-string }}
+          echo "PR version: $pr_version"
 
             
