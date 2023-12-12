@@ -1,0 +1,23 @@
+name: Build and test
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+jobs:
+  build-and-test-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fecth-tags: true
+      - name: Generate version
+        id: generate-version
+        uses: ./
+      - name: Print version information
+        if: steps.generate-version.outputs.version != ''
+        run: echo ${{ steps.generate-version.outputs.version }}
+
+            
