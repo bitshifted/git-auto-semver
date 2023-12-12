@@ -13,6 +13,8 @@ PATCH_REGEX='^(build|chore|ci|docs|fix|perf|refactor|revert|style|test)\s?(\(.+\
 MINOR_REGEX='^(feat)\s*(\(.+\))?\s?:\s*(.+)'
 MAJOR_REGEX='^(BREAKING CHANGE)\s*(\(.+\))?\s?:\s*(.+)'
 
+echo "version argument: $1"
+
 if [ "$1" = "--pull-request" ];then 
   git rev-parse --short HEAD
   exit 0

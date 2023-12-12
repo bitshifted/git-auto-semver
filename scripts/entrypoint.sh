@@ -12,6 +12,7 @@ cat $GITHUB_EVENT_PATH
 
 
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+    echo "event is pull request"
     VERSION_STRING=$(version.sh --pull-request)
 fi
 
