@@ -17,7 +17,8 @@ cat $GITHUB_EVENT_PATH
 
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
     VERSION_STRING=$(version.sh --pull-request)
-else if [ "$GITHUB_EVENT_NAME" = "push"]
+elif [ "$GITHUB_EVENT_NAME" = "push"]
+    VERSION_STRING=$(version.sh)
 fi
 
 echo "Calculated version: $VERSION_STRING"
