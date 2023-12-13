@@ -21,5 +21,9 @@ jobs:
         run: echo ${{ steps.generate-version.outputs.version-string }}
       - name: Tag version
         if: ${{ github.event_name == 'push' }}
-        run: echo "Push to main event"
+        run: |
+          echo "Tagging version: ${{ steps.generate-version.outputs.version-string }}"
+          git tag  v${{ steps.generate-version.outputs.version-string }}
+          git tag --force v1 v${{ steps.generate-version.outputs.version-string }}
+          git push origin --tags
             
