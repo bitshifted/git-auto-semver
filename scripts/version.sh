@@ -21,8 +21,8 @@ fi
 # get the latest tag
 LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`  2> /dev/null)
 if [ -z $LATEST_TAG ]; then
-  LATEST_TAG="v1.0.0"
-  echo "1.0.0"
+  LATEST_TAG="$INPUT_INITIAL_VERSION"
+  echo "$LATEST_TAG"
   exit 0
 fi
 

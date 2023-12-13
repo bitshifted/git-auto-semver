@@ -2,6 +2,10 @@ name: 'Git Automatic Semantic Versioning'
 description: 'Automatically create new semantci version string based on commit message'
 author: 'Bitshift'
 inputs:
+  main_branch:
+    description: 'Main branch for the repository'
+    required: false
+    default: 'main'
   initial_version:
     description: 'First version, defaults to 1.0.0'
     required: false
@@ -12,3 +16,6 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+branding:
+  color: blue
+  icon: tag
