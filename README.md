@@ -34,6 +34,14 @@ Main branch for this repository. By default, it is `main`, but can be set to any
 
 If this is a fresh repository with no existing tags, first version will be set to this value. By default, it is `1.0.0`
 
+### `create_tag`
+
+If set to `true`, create new tag with calculated version. Default value is `false`
+
+### `tag_prefix`
+
+If `create_tag` is enabled, this value will be used as tag prefix. Final tag name will be in format `<tag_prefix><calculated_version>`. Default value is `v`.
+
 ## Output
 
 ### `version-string`
@@ -58,4 +66,25 @@ jobs:
       - name: Use version
         run: echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"
 
+```
+
+With customized parameters:
+
+```yaml
+on:
+  push:
+    branches: [main]
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: calculate version
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v1
+        with:
+          main_branch: master
+          create_tag: true
+          tag_prefix: 'tags'
+      - name: Use version
+        run: echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"
 ```
