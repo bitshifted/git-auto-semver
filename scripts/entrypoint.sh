@@ -11,10 +11,10 @@ VERSION_STRING="$INPUT_INITIAL_VERSION"
 
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
     VERSION_STRING=$(version.sh --pull-request)
-elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+else
     if [ "$GITHUB_REF" = "refs/heads/$INPUT_MAIN_BRANCH" ]; then
         VERSION_STRING=$(version.sh)
-    else 
+    else
         echo "Push not on main branch"
         exit 0
     fi
