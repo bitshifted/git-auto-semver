@@ -13,13 +13,13 @@ PATCH_REGEX='^(build|chore|ci|docs|fix|perf|refactor|revert|style|test)\s?(\(.+\
 MINOR_REGEX='^(feat)\s*(\(.+\))?\s?:\s*(.+)'
 MAJOR_REGEX='^(BREAKING CHANGE)\s*(\(.+\))?\s?:\s*(.+)'
 
-if [ "$1" = "--pull-request" ];then 
+if [ "$1" = "--pull-request" ];then
   git rev-parse --short HEAD
   exit 0
 fi
 
 # get the latest tag
-LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`  2> /dev/null)
+LATEST_TAG=$(git tag -l | sort -V | tail -n 1 2> /dev/null)
 if [ -z $LATEST_TAG ]; then
   LATEST_TAG="$INPUT_INITIAL_VERSION"
   echo "$LATEST_TAG"
