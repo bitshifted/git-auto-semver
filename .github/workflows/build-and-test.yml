@@ -24,7 +24,7 @@ jobs:
         run: |
           echo "Tagging version: ${{ steps.generate-version.outputs.version-string }}"
           git tag  v${{ steps.generate-version.outputs.version-string }}
-          git tag --force v1 v${{ steps.generate-version.outputs.version-string }}
+          git tag --force v2 v${{ steps.generate-version.outputs.version-string }}
           git push origin v${{ steps.generate-version.outputs.version-string }}
-          git push origin --force v1
+          git push origin --force v2
             
