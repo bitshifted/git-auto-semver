@@ -14,8 +14,7 @@ MINOR_REGEX='^(feat)\s*(\(.+\))?\s?:\s*(.+)'
 MAJOR_REGEX='^(BREAKING CHANGE)\s*(\(.+\))?\s?:\s*(.+)'
 
 if [ "$1" = "--pull-request" ];then 
-  # git rev-parse --short HEAD
-  git tag -l --sort=v:refname | grep -E  "[0-9]\.[0-9]\.[0-9]$" | tail -n 1
+  git rev-parse --short HEAD
   exit 0
 fi
 

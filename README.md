@@ -18,6 +18,13 @@ feat: add new awesome feature
 
 This will bump version number to `1.2.0`, since `feat` marks a change in minor version.
 
+## Upgrading from version v1 to v2
+
+In version `v2`, some changes are made in the way semver tags are processed. Specifically, action checks tags Semantic Versioning format, and takes the latest tag
+conforming to Semantic versioning as current version.
+
+In most of the cases, upgrade should be seamless, but if you have some tags that so not conform to semver format, you might get unexpected results.
+
 ## Main branch and pull request
 
 This action assumes that each push (merge) to the main branch will create new version of software, with corresponding semantic version. By default, main branch is assumed to be `main`, but this can be overriden in configuration. Each push to this branch will create new version.
@@ -86,7 +93,7 @@ jobs:
           fetch-tags: true
       - name: calculate version
         id: calculate-version
-        uses: bitshifted/git-auto-semver@v1
+        uses: bitshifted/git-auto-semver@v2
       - name: Use version
         run: 'echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"'
 
@@ -127,7 +134,7 @@ jobs:
           fetch-tags: true
       - name: calculate version
         id: calculate-version
-        uses: bitshifted/git-auto-semver@v1
+        uses: bitshifted/git-auto-semver@v2
         with:
           main_branch: master
           create_tag: true
