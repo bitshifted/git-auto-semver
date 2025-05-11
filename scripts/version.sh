@@ -22,10 +22,10 @@ fi
 LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`  2> /dev/null)
 if [ -z $LATEST_TAG ]; then
   LATEST_TAG="$INPUT_INITIAL_VERSION"
-  echo "Latest tag: $LATEST_TAG"
+  echo "Latest tag: $LATEST_TAG" >&2
   exit 0
 fi
-echo "Latest tag: $LATEST_TAG"
+echo "Latest tag: $LATEST_TAG" >&2
 
 LATEST_VERSION=""
 if [[ $LATEST_TAG =~ [0-9]+\.[0-9]+\.[0-9]+$ ]]; then
