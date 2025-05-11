@@ -14,12 +14,13 @@ MINOR_REGEX='^(feat)\s*(\(.+\))?\s?:\s*(.+)'
 MAJOR_REGEX='^(BREAKING CHANGE)\s*(\(.+\))?\s?:\s*(.+)'
 
 if [ "$1" = "--pull-request" ];then 
-  git rev-parse --short HEAD
+  # git rev-parse --short HEAD
+  git tag -l --sort=v:refname | grep -E  "[0-9]\.[0-9]\.[0-9]$" | tail -n 1
   exit 0
 fi
 
 # get the latest tag
-LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`  2> /dev/null)
+LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "[0-9]\.[0-9]\.[0-9]$" | tail -n 1)
 if [ -z $LATEST_TAG ]; then
   LATEST_TAG="$INPUT_INITIAL_VERSION"
   echo $LATEST_TAG

@@ -13,6 +13,8 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: test regex
+        run: git tag -l --sort=v:refname | grep -E  "[0-9]\.[0-9]\.[0-9]$" | tail -n 1
       - name: Generate version
         id: generate-version
         uses: ./

@@ -11,6 +11,7 @@ VERSION_STRING="$INPUT_INITIAL_VERSION"
 
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
     VERSION_STRING=$(version.sh --pull-request)
+    echo "Pull request version string: $VERSION_STRING"
 else
     if [ "$GITHUB_REF" = "refs/heads/$INPUT_MAIN_BRANCH" ]; then
         VERSION_STRING=$(version.sh) || exit 1
