@@ -79,6 +79,11 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: calculate version
         id: calculate-version
         uses: bitshifted/git-auto-semver@v1
@@ -115,6 +120,11 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: calculate version
         id: calculate-version
         uses: bitshifted/git-auto-semver@v1
@@ -123,17 +133,8 @@ jobs:
           create_tag: true
           tag_prefix: 'tags'
       - name: Use version
-        run: 'echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"'
+        run: echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"
 ```
 ## Troubleshooting
 
 Make sure to set `fetch-depth: 0` and `fetch-tags: true` in the checkout action. This will pull all data needed for semver to work correctly.
-
-If you receive a `Resource not accessible by integration` error, be sure that either the `GITHUB_TOKEN` has permission to write content (to create a tag) or the permissions for the job:
-
-```yaml
-jobs:
-  versioning:
-    permissions:
-      contents: write
-```
