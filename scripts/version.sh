@@ -19,7 +19,7 @@ if [ "$1" = "--pull-request" ];then
 fi
 
 # get the latest tag
-LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "[0-9]\.[0-9]\.[0-9]$" | tail -n 1)
+LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 if [ -z $LATEST_TAG ]; then
   LATEST_TAG="$INPUT_INITIAL_VERSION"
   echo $LATEST_TAG
