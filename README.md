@@ -1,5 +1,20 @@
 # Automatic semantic versioning for Git
 
+## Table of Contents
+
+- [Upgrading from version v1 to v2](#upgrading-from-version-v1-to-v2)
+- [Main branch and pull request](#main-branch-and-pull-request)
+- [Inputs](#inputs)
+  - [`main_branch`](#main_branch)
+  - [`initial_version`](#initial_version)
+  - [`create_tag`](#create_tag)
+  - [`tag_prefix`](#tag_prefix)
+- [Output](#output)
+  - [`version-string`](#version-string)
+- [Usage](#usage)
+- [Creating releases](#creating-releases)
+- [Troubleshooting](#troubleshooting)
+
 Github Action for automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). In essence, the action will parse commit message to extract the context of change and bump corresponding number in semantic version string.
 
 This action supports the following Conventional commit messages type:
@@ -142,6 +157,57 @@ jobs:
       - name: Use version
         run: echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"
 ```
+
+## Creating releases
+
+Although the action does not support creating releases directly, you can use it in conjunction with other actions to streamline the process of versioning, tagging and creating a release. An example workflow:
+
+```
+name: Build pipeline
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    # defines version output used for a release
+    outputs:
+      version: ${{ steps.calculate-version.outputs.version-string }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Configure version information
+        id: calculate-version
+        if: ${{ github.event_name == 'push' }}
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          initial_version: 0.2.0
+  # Create release
+  create-release:
+    if:  ${{ github.event_name == 'push' }}
+    needs: build-and-test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: v${{ needs.build-and-test.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## Troubleshooting
 
 Make sure to set `fetch-depth: 0` and `fetch-tags: true` in the checkout action. This will pull all data needed for semver to work correctly.
