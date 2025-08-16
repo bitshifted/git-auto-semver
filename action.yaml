@@ -18,6 +18,10 @@ inputs:
     description: 'Tag prefix, if tag creation is enabled. Tag will be named `prefix<version>`. Defaults to `v`'
     required: false
     default: 'v'
+  manual_bump:
+    description: 'Manual bump type, can be `patch`, `minor`, `major`. If empty (default), the script will determine the bump type based on commit messages.'
+    required: false
+    default: ''
 outputs:
   version-string:
     description: 'Semantic version string'
