@@ -13,6 +13,7 @@
   - [`version-string`](#version-string)
 - [Usage](#usage)
 - [Creating releases](#creating-releases)
+- [Manual version bump](#manual-version-bump)
 - [Troubleshooting](#troubleshooting)
 
 Github Action for automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). In essence, the action will parse commit message to extract the context of change and bump corresponding number in semantic version string.
@@ -24,6 +25,8 @@ This action supports the following Conventional commit messages type:
 * `BREAKING CHANGE` - will bump major version number
 
 Action works by looking at the latest tag in the repository. It is assumed that tags are in `major.minor.patch` format, preceded by `v` (ie. valied tag would be `v1.2.3`).
+
+In addition, it is possible to configure the action to be triggeed manually and bump specific version number. See [manual version bunp](#manual-version-bump) section for details.
 
 As an example, lets assume that latest version is `1.1.0`, represented with tag `v1.1.10`. We add a commit with the following message:
 
@@ -63,6 +66,15 @@ If set to `true`, create new tag with calculated version. Default value is `fals
 ### `tag_prefix`
 
 If `create_tag` is enabled, this value will be used as tag prefix. Final tag name will be in format `<tag_prefix><calculated_version>`. Default value is `v`.
+
+### `manual_bump`
+
+If set, passes the argument to action to increase specific version number. Allowed values are:
+* `major` - bump major version number
+* `minor` - bump minor version number
+* `patch` - bump patch version number
+
+Default value is empty, which means that automatic versioning will be performed.
 
 ## Output
 
@@ -207,6 +219,12 @@ jobs:
           tag_name: v${{ needs.build-and-test.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Manual version bump
+
+Although the action is intended to run automatically on every push to main branch, it may not be desired in some cases. For example, you might want to release your software at some predefined intervals, or when needed.
+
+Action can be configured to be triggered manunally, and you decide if you want to bump major, minor or patch number.
 
 ## Troubleshooting
 
