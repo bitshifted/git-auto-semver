@@ -18,6 +18,19 @@ if [ "$1" = "--pull-request" ];then
   exit 0
 fi
 
+# Check if --manual parameter if present
+MANUAL=""
+for ((i=1; i<=$#; i++)); do
+  if [ "${!i}" = "--manual" ]; then
+    next=$((i+1))
+    MANUAL="${!next}"
+    if [[ ! "$MANUAL" =~ ^(major|minor|patch)$ ]]; then
+      echo "Error: --manual must be followed by one of: major, minor, patch" >&2
+      exit 1
+    fi
+  fi
+done
+
 # get the latest tag
 LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 if [ -z $LATEST_TAG ]; then
@@ -36,16 +49,34 @@ fi
 
 # process last commit message
 MESSAGE=$(git log -1 --pretty=%B)
-if [[ "$MESSAGE" =~ $PATCH_REGEX ]]; then
-  semver-bump.sh -p $LATEST_VERSION
-elif [[ "$MESSAGE" =~ $MINOR_REGEX ]]; then
-  semver-bump.sh -m $LATEST_VERSION
-elif [[ $MESSAGE =~ $MAJOR_REGEX ]]; then
-  semver-bump.sh -M $LATEST_VERSION
+if [[ -z "$MANUAL" ]];then
+  case "$MESSAGE" in
+    $PATCH_REGEX)
+      semver-bump.sh -p $LATEST_VERSION
+      ;;
+    $MINOR_REGEX)
+      semver-bump.sh -m $LATEST_VERSION
+      ;;
+    $MAJOR_REGEX)
+      semver-bump.sh -M $LATEST_VERSION
+      ;;
+    *)
+      semver-bump.sh -p $LATEST_VERSION
+      ;;
+  esac
 else
-  semver-bump.sh -p $LATEST_VERSION
+  case "$MANUAL" in
+    patch)
+      semver-bump.sh -p $LATEST_VERSION
+      ;;
+    minor)
+      semver-bump.sh -m $LATEST_VERSION
+      ;;
+    major)
+      semver-bump.sh -M $LATEST_VERSION
+      ;;
+    *)
+      exit 1
+      ;;
+  esac
 fi
-
-
-
-
