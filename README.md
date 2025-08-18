@@ -26,7 +26,7 @@ This action supports the following Conventional commit messages type:
 
 Action works by looking at the latest tag in the repository. It is assumed that tags are in `major.minor.patch` format, preceded by `v` (ie. valied tag would be `v1.2.3`).
 
-In addition, it is possible to configure the action to be triggeed manually and bump specific version number. See [manual version bunp](#manual-version-bump) section for details.
+In addition, it is possible to configure the action to be triggeed manually and bump specific version number. See [manual version bump](#manual-version-bump) section for details.
 
 As an example, lets assume that latest version is `1.1.0`, represented with tag `v1.1.10`. We add a commit with the following message:
 
@@ -224,7 +224,77 @@ jobs:
 
 Although the action is intended to run automatically on every push to main branch, it may not be desired in some cases. For example, you might want to release your software at some predefined intervals, or when needed.
 
-Action can be configured to be triggered manunally, and you decide if you want to bump major, minor or patch number.
+Action can be configured to be triggered manunally, and you decide if you want to bump major, minor or patch number. When the action runs, it bump selected version number. This way, you have the best of both ways:
+
+* automatic management of versions numbers, which means you can't have duplicate versions, skipped numbers etc.
+* you can trigger the release any time you want and bump any part of the version.
+
+The example bellow shows how to achieve this. Action will be triggered by `workflow_dispatch` event, ie. when user clicks a button in UI. This configuration also creates a dropdown box from which user can select a version number to increase, reducing the possibility for errors:
+
+```yaml
+name: Release pipeline
+on:
+  workflow_dispatch:
+  # creates drop down for selecting version number to bump
+    inputs:
+      manual_bump:
+        description: 'Version number to increase'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        default: patch
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.calculate-version.outputs.version-string }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Configure version information
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          initial_version: 0.2.0
+          # THIS IS IMPORTANT! it will pass the required parameter to action
+          manual_bump: ${{ github.event.inputs.manual_bump }}
+      # add any other jobs you need
+  # Create release if needed (optional)
+  create-release:
+    needs: build-and-test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Download binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: content-data
+          path: content.tar.gz
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: v${{ needs.build-and-test.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            content.tar.gz
+```
+
+This sample also creates a release for your artifact. It will create a UI like in the image bellow:
+
+![](./docs/action-run.png)
 
 ## Troubleshooting
 
