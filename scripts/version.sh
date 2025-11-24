@@ -61,20 +61,15 @@ fi
 # process last commit message
 MESSAGE=$(git log -1 --pretty=%B)
 if [[ -z "$MANUAL" ]];then
-  case "$MESSAGE" in
-    $PATCH_REGEX)
-      semver-bump.sh -p $LATEST_VERSION
-      ;;
-    $MINOR_REGEX)
-      semver-bump.sh -m $LATEST_VERSION
-      ;;
-    $MAJOR_REGEX)
-      semver-bump.sh -M $LATEST_VERSION
-      ;;
-    *)
-      semver-bump.sh -p $LATEST_VERSION
-      ;;
-  esac
+  if [[ "$MESSAGE" =~ $PATCH_REGEX ]]; then
+    semver-bump.sh -p $LATEST_VERSION
+  elif [[ "$MESSAGE" =~ $MINOR_REGEX ]]; then
+    semver-bump.sh -m $LATEST_VERSION
+  elif [[ $MESSAGE =~ $MAJOR_REGEX ]]; then
+    semver-bump.sh -M $LATEST_VERSION
+  else
+    semver-bump.sh -p $LATEST_VERSION
+  fi
 else
   case "$MANUAL" in
     patch)
