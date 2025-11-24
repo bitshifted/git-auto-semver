@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 #
 # /*
 #  * Copyright (c) 2023  Bitshift D.O.O (http://bitshifted.co)
@@ -13,13 +13,14 @@ PATCH_REGEX='^(build|chore|ci|docs|fix|perf|refactor|revert|style|test)\s?(\(.+\
 MINOR_REGEX='^(feat)\s*(\(.+\))?\s?:\s*(.+)'
 MAJOR_REGEX='^(BREAKING CHANGE)\s*(\(.+\))?\s?:\s*(.+)'
 
-if [ "$1" = "--pull-request" ];then 
+if [ "$1" = "--pull-request" ];then
   git rev-parse --short HEAD
   exit 0
 fi
 
 # Check if --manual parameter if present
 MANUAL=""
+TAG_PREFIX=""
 for ((i=1; i<=$#; i++)); do
   if [ "${!i}" = "--manual" ]; then
     next=$((i+1))
@@ -29,10 +30,20 @@ for ((i=1; i<=$#; i++)); do
       exit 1
     fi
   fi
+
+  if [ "${!i}" = "--tag-prefix" ]; then
+    next=$((i+1))
+    TAG_PREFIX="${!next}"
+  fi
 done
 
+if [ -z "$TAG_PREFIX" ]; then
+  echo "Error: --tag-prefix is a mandatory parameter" >&2
+  exit 1
+fi
+
 # get the latest tag
-LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
+LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "${TAG_PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 if [ -z $LATEST_TAG ]; then
   LATEST_TAG="$INPUT_INITIAL_VERSION"
   echo $LATEST_TAG

@@ -15,9 +15,9 @@ if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
 else
     if [ "$GITHUB_REF" = "refs/heads/$INPUT_MAIN_BRANCH" ]; then
         if [ -n "${INPUT_MANUAL_BUMP:-}" ]; then
-            VERSION_STRING=$(version.sh --manual "$INPUT_MANUAL_BUMP") || exit 1
+            VERSION_STRING=$(version.sh --tag-prefix $INPUT_TAG_PREFIX  --manual "$INPUT_MANUAL_BUMP") || exit 1
         else
-            VERSION_STRING=$(version.sh) || exit 1
+            VERSION_STRING=$(version.sh --tag-prefix $INPUT_TAG_PREFIX) || exit 1
         fi
     else
         echo "Push not on main branch"
