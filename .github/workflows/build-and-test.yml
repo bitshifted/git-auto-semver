@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -27,4 +27,21 @@ jobs:
           git tag --force v2 v${{ steps.generate-version.outputs.version-string }}
           git push origin v${{ steps.generate-version.outputs.version-string }}
           git push origin --force v2
+  release:
+    needs: build-and-test-project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: v{{ steps.generate-version.outputs.version-string }}
+          token: ${{ secrets.GITHUB_TOKEN }}
             
