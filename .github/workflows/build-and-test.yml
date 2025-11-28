@@ -7,6 +7,8 @@ on:
 jobs:
   build-and-test-project:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.generate-version.outputs.version-string }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,6 +44,6 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-          tag_name: v{{ steps.generate-version.outputs.version-string }}
+          tag_name: v{{ needs.build-and-test-project.outputs.version-string }}
           token: ${{ secrets.GITHUB_TOKEN }}
             
