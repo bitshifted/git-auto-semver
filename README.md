@@ -14,6 +14,7 @@
 - [Usage](#usage)
 - [Creating releases](#creating-releases)
 - [Manual version bump](#manual-version-bump)
+- [Working with multiple components in single repo](#working-with-multiple-components-in-single-repo)
 - [Troubleshooting](#troubleshooting)
 
 Github Action for automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). In essence, the action will parse commit message to extract the context of change and bump corresponding number in semantic version string.
@@ -295,6 +296,144 @@ jobs:
 This sample also creates a release for your artifact. It will create a UI like in the image bellow:
 
 ![](./docs/action-run.png)
+
+## Working with multiple components in single repo
+
+This section explains how you can handle cases when you have multiple components in single repository (ie. monorepo), and you want to maintain separate versions for each component. The approach assumes that your components are in separate directories.
+
+Let's say your repository structure looks something like this:
+
+```
+my-repo
+  |-- backend
+  |---- backed files ...
+  |-- frontend
+  |---- frontend files...
+```
+The approach here is to configure workflow for each component (`backend` and `frontend`) to be triggered when there are changes in respective directories. For each component flow, configure `git-semver-action` to use different tag.
+
+Example workflow for `backend` component:
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Calculate version
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          initial_version: '1.0.0'
+          tag_prefix: 'be-'
+```
+
+and for `frontend`
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Calculate version
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          initial_version: '1.0.0'
+          tag_prefix: 'fe-'
+```
+
+This way, when there are changes in `frontend` directory, workflow for that component will be triggered, version calculated based on tag prefix, and new tag will be created (ie. `fe-1.2.0`). The same goes for `backend` directory.
+
+Using this approach, you can have many components in the same repo, each one maintaining separate versioning.
+
+### Avoiding duplication
+
+Looking at the examples above, the two workflows look mostly identical. You can extract the common code into separate workflow and call it from each workflow seaprately. This reduces dupliaction and makes maintenance easier.
+
+Example of common workflow:
+
+```yaml
+# common.yaml
+
+---
+on:
+  workflow_call:
+    inputs:
+      tag-prefix:
+        description: 'Tag prefix to use for versioning'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Calculate version
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          initial_version: '1.0.0'
+          tag_prefix: '${{ inputs.tag-prefix }}'
+```
+
+To call this file from another workflow:
+
+```yaml
+# frontend.yaml
+...
+jobs:
+  # other jobs here
+  release:
+    needs: test-and-verify
+    uses: ./.github/workflows/common-release.yaml
+    with:
+      tag-prefix: 'fe-'
+```
 
 ## Troubleshooting
 
