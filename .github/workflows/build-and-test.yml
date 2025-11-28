@@ -45,6 +45,6 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-          tag_name: v{{ needs.build-and-test-project.outputs.version}}
+          tag_name: v${{ needs.build-and-test-project.outputs.version}}
           token: ${{ secrets.GITHUB_TOKEN }}
             
