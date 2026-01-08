@@ -37,11 +37,6 @@ for ((i=1; i<=$#; i++)); do
   fi
 done
 
-if [ -z "$TAG_PREFIX" ]; then
-  echo "Error: --tag-prefix is a mandatory parameter" >&2
-  exit 1
-fi
-
 # get the latest tag
 LATEST_TAG=$(git tag -l --sort=v:refname | grep -E  "${TAG_PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" | tail -n 1)
 if [ -z $LATEST_TAG ]; then
